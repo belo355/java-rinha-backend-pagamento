@@ -44,7 +44,4 @@ public class TransacoesDTO {
         return realizadaEm;
     }
 
-    public void setRealizadaEm(Date realizadaEm) {
-        this.realizadaEm = realizadaEm;
-    }
 }

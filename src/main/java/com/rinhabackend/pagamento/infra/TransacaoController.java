@@ -38,9 +38,13 @@ public class TransacaoController {
     @GetMapping(path = "/clientes/{id}/extrato")
     public ResponseEntity extrato(@PathVariable("id") Long id) {
         ExtratoDTO extratoDTO = transacaoUseCase.extrato(id);
-        return ResponseEntity.ok().body(extratoDTO);
-        //TODO: analisar pq a tabela transacao nao esta gravando todas transacoes (igual ao limite)
-        //TODO: corrigir retorno do segundo objeto
+        if (extratoDTO.getUltimasTransacoes().getList().isEmpty()) {
+            return ResponseEntity.noContent().build();
+        } else {
+            return ResponseEntity.ok().body(extratoDTO);
+        }
     }
+
+    //TODO: CONTINUAR A PARTIR DO CADASTRO DO USUARIO
 
 }

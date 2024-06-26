@@ -47,8 +47,8 @@ public class LimiteDB {
         this.saldo = saldo;
     }
 
-    public void updateCredSaldo(int saldo) {
-        this.saldo +=saldo;
+    public void updateCredSaldo(int valor) {
+        this.saldo = this.saldo + valor;
     }
 
     public boolean validDebitSaldo(int valor) {
@@ -60,6 +60,6 @@ public class LimiteDB {
     }
 
     public void updateDebitSaldo(int valor) {
-        this.saldo -= valor;
+        this.saldo = this.saldo - valor;
     }
 }

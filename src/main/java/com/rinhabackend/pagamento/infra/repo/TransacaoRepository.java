@@ -10,4 +10,6 @@ import java.util.Optional;
 @Repository
 public interface TransacaoRepository extends CrudRepository<TransacaoDB, Long> {
     List<Optional<TransacaoDB>> findAllById(Long id);
+    List<Optional<TransacaoDB>> findByUserId(Long id);
+
 }

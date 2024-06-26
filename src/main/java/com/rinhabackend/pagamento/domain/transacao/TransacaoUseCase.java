@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 
 @Service
@@ -73,7 +74,7 @@ public class TransacaoUseCase {
 
     public ExtratoDTO extrato(Long id) {
         Optional<LimiteDB> limiteDB = limiteRepository.findById(id);
-        List<Optional<TransacaoDB>> transacaoDB = transacaoRepository.findAllById(id);
+        List<Optional<TransacaoDB>> transacaoDB = transacaoRepository.findByUserId(id);
         SaldoDTO saldoDto = new SaldoDTO();
         UltimasTransacoesDTO ultimasTransacoesDTO = new UltimasTransacoesDTO();
 
@@ -83,13 +84,26 @@ public class TransacaoUseCase {
             saldoDto.setTotal(limiteDB.get().getSaldo());
         }
 
-        if(transacaoDB.get(0).isPresent()) {
+        if(transacaoDB.size() == 0) {
+            logger.info("Não transacoes para o cliente");
+            ultimasTransacoesDTO.setList(new ArrayList<>());
+        }else {
             List<TransacoesDTO> list = new ArrayList<>();
+            transacaoDB.forEach(t -> list.add(
+                    new TransacoesDTO(
+                            t.get().getValor(),
+                            t.get().getTipo(),
+                            t.get().getDescricao(),
+                            t.get().getRealizada_em()
+                    )));
 
-            transacaoDB.stream().map(t -> list.add(
-                            new TransacoesDTO(t.get().getValor(), t.get().getTipo(), t.get().getDescricao(), new Date())
-                    )
-            );
+            //ordenando lista e filtrando ultimas 10 transacoes
+            List<TransacoesDTO> sortedList = list.stream()
+                    .sorted(Comparator.comparing(TransacoesDTO::getRealizadaEm).reversed())
+                    .limit(10)
+                    .collect(Collectors.toList());
+
+            ultimasTransacoesDTO.setList(sortedList);
         }
         ExtratoDTO extratoDTO = new ExtratoDTO();
         extratoDTO.setSaldoDto(saldoDto);
